@@ -1,5 +1,0 @@
-C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\1\Task1\mySet\obj\Debug\net6.0\mySet.csproj.AssemblyReference.cache
-C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\1\Task1\mySet\obj\Debug\net6.0\mySet.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\1\Task1\mySet\obj\Debug\net6.0\mySet.AssemblyInfoInputs.cache
-C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\1\Task1\mySet\obj\Debug\net6.0\mySet.AssemblyInfo.cs
-C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\1\Task1\mySet\obj\Debug\net6.0\mySet.csproj.CoreCompileInputs.cache
