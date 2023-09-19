@@ -4,7 +4,6 @@
         static void Main()
         {
             //Задание множеств:
-
             MySet A = new MySet().CreateRandom(5);//Случайное заполнение
 
             MySet B = new MySet().FullSet().//По условию: знак, чётность/нечётность, кратность
