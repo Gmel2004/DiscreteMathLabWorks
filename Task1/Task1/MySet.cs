@@ -46,7 +46,7 @@
                 }
             }
             return result;
-        }//
+        }//Отобрать по условию
 
         public static MySet operator +(MySet first, MySet second)
         {
