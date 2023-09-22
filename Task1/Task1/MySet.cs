@@ -10,7 +10,12 @@
             MySet result = new MySet();
             for (int i = 0; i < count; i++)
             {
-                result.set.Add(rnd.Next(-500, 500 + 1));
+                var newCount = rnd.Next(-500, 500 + 1);
+                while(set.Contains(newCount))
+                {
+                    newCount = rnd.Next(-500, 500 + 1);
+                }
+                result.set.Add(newCount);
             }
             result.set.Sort();
             return result;
@@ -103,7 +108,7 @@
             {
                 Console.Write(set[0]);
             }
-            for (var i = 1; i < set.Count - 1; i++)
+            for (var i = 1; i < set.Count; i++)
             {
                 Console.Write($", {set[i]}");
             }
