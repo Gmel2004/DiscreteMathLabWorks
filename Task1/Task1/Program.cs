@@ -19,6 +19,7 @@
             MySet E = A + B;//Объединение
             MySet F = E - A;//Разность
             MySet G = C.CalculateSymmetricDif(B);//Симметрическая разность
+            MySet H = new MySet().FullSet().CalculateAddition();//Отрицание
 
             //Вывод множеств:
             A.Write();
@@ -28,6 +29,7 @@
             E.Write();
             F.Write();
             G.Write();
+            H.Write();
         }
     }
 }

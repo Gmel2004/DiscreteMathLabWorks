@@ -98,15 +98,16 @@
 
         public void Write()
         {
+            Console.Write('{');
             if (set.Count > 0)
             {
                 Console.Write(set[0]);
             }
-            for (var i = 1; i < set.Count; i++)
+            for (var i = 1; i < set.Count - 1; i++)
             {
-                Console.Write($" {set[i]}");
+                Console.Write($", {set[i]}");
             }
-            Console.WriteLine();
+            Console.WriteLine('}');
         }//Вывести множество на экран
 
         public MySet FullSet()
@@ -115,5 +116,10 @@
             result.set = Enumerable.Range(-500, 1001).ToList();
             return result;
         }//Задать универсум
+
+        public MySet CalculateAddition()
+        {
+            return FullSet() - this;
+        }//Вычислить дополнение
     }
 }
