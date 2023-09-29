@@ -2,43 +2,59 @@
 {
     public class MySet
     {
-        public List<int> set = new List<int> { };
+        public HashSet<int> set = new HashSet<int> { };
 
+        private int begin = -500, end = 500;
+
+        public MySet() {}
+
+        public MySet(int begin, int end) => SetUniverse(begin, end);
+
+        private static bool CheckUniverse(MySet first, MySet second)
+        {
+            bool isOneUniverse = first.begin == second.begin
+                && first.end == second.end;
+            return isOneUniverse;
+        }//Проверить универсум
         public MySet CreateRandom(int count)
         {
-            var rnd = new Random();
-            MySet result = new MySet();
-            for (int i = 0; i < count; i++)
+            if (count >= 0 && end - begin + 1 >= count)
             {
-                var newCount = rnd.Next(-500, 500 + 1);
-                while(set.Contains(newCount))
+                var rnd = new Random();
+                MySet result = new MySet();
+                for (int i = 0; i < count; i++)
                 {
-                    newCount = rnd.Next(-500, 500 + 1);
+                    var newCount = rnd.Next(-500, 500 + 1);
+                    while (set.Contains(newCount))
+                    {
+                        newCount = rnd.Next(-500, 500 + 1);
+                    }
+                    result.set.Add(newCount);
                 }
-                result.set.Add(newCount);
+                return result;
             }
-            result.set.Sort();
-            return result;
+            else
+            {
+                throw new Exception("Ошибка: нельзя создать множество, задано недопустимое количество элементов");
+            }
         }//Случайно заполнинить
 
         public void Add(int number)
         {
-            if (!set.Contains(number))
+            if (!set.Contains(number) && begin <= end && number <= end)
             {
                 set.Add(number);
             }
-            set.Sort();
+            else
+            {
+                throw new Exception("Ошибка: данный элемент нельзя добавить в множество");
+            }
         }//Добавить элемент
 
         public void Remove(int number)
         {
             set.Remove(number);
         }//Удалить элемент
-
-        public void RemoveAt(int number)
-        {
-            set.RemoveAt(number);
-        }//Удалить элемент по индексу
 
         public MySet Where(Func<int, bool> predicate)
         {
@@ -55,76 +71,105 @@
 
         public static MySet operator +(MySet first, MySet second)
         {
-            MySet result = new MySet();
-            foreach (var i in first.set)
+            if (CheckUniverse(first, second))
             {
-                result.set.Add(i);
+                MySet result = new MySet();
+                foreach (var i in first.set)
+                {
+                    result.set.Add(i);
+                }
+                foreach (var i in second.set)
+                {
+                    result.set.Add(i);
+                }
+                return result;
             }
-            foreach (var i in second.set)
+            else
             {
-                result.set.Add(i);
+                throw new Exception("Невозможно выполнить операцию: Множества имеют разные универсумы");
             }
-            result.set = result.set.Distinct().ToList();
-            result.set.Sort();
-            return result;
         }//Перегрузка оператора +
 
         public static MySet operator -(MySet first, MySet second)
         {
-            MySet result = new MySet();
-            foreach (var i in first.set)
+            if (CheckUniverse(first, second))
             {
-                if (!second.set.Contains(i))
+                MySet result = new MySet();
+                foreach (var i in first.set)
                 {
-                    result.set.Add(i);
+                    if (!second.set.Contains(i))
+                    {
+                        result.set.Add(i);
+                    }
                 }
+                return result;
             }
-            result.set.Sort();
-            return result;
+            else
+            {
+                throw new Exception("Невозможно выполнить операцию: Множества имеют разные универсумы");
+            }
         }//Перегрузка оператора - 
 
         public MySet Cross(MySet second)
         {
-            MySet result = new MySet();
-            foreach (var i in set)
+            if (CheckUniverse(second, this))
             {
-                if (second.set.Contains(i))
+                MySet result = new MySet();
+                foreach (var i in set)
                 {
-                    result.set.Add(i);
+                    if (second.set.Contains(i))
+                    {
+                        result.set.Add(i);
+                    }
                 }
+                return result;
             }
-            return result;
+            else
+            {
+                throw new Exception("Невозможно выполнить операцию: Множества имеют разные универсумы");
+            }
         }//Пересечь
 
         public MySet CalculateSymmetricDif(MySet second)
         {
-            return (this - second) + (second - this);
+            if (CheckUniverse(second, this))
+            {
+                return (this - second) + (second - this);
+            }
+            else
+            {
+                throw new Exception("Невозможно выполнить операцию: Множества имеют разные универсумы");
+            }
         }//Вычислить симметричрую разность
 
-        public void Write()
+        public void WriteInformation()
         {
-            Console.Write('{');
-            if (set.Count > 0)
-            {
-                Console.Write(set[0]);
-            }
-            for (var i = 1; i < set.Count; i++)
-            {
-                Console.Write($", {set[i]}");
-            }
-            Console.WriteLine('}');
+            Console.WriteLine("{", String.Join(", ", set), '}', $" Универсум: [{begin}, {end}]");
         }//Вывести множество на экран
 
-        public MySet FullSet()
+        public MySet GetUniverse()
         {
             MySet result = new MySet();
-            result.set = Enumerable.Range(-500, 1001).ToList();
+            result.set = Enumerable.Range(begin, end - begin + 1).ToHashSet();
             return result;
+        }//Получить универсум
+
+        public void SetUniverse(int begin, int end)
+        {
+            if (begin <= end && set.All(t => t >= begin && t <= end))
+            {
+                this.begin = begin;
+                this.end = end;
+            }
+            else
+            {
+                throw new Exception("Ошибка: заданы недопустимые границы для универсума");
+            }
         }//Задать универсум
 
-        public MySet CalculateAddition()
+        public static MySet operator !(MySet first)
         {
-            return FullSet() - this;
+            return first.GetUniverse() - first;
         }//Вычислить дополнение
     }
 }
