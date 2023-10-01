@@ -2,7 +2,7 @@
 {
     internal class Program
     {
-        public static Dictionary<string, MySet> Sets = new Dictionary<string, MySet>() { };
+        public static Dictionary<string, NumericalSet> Sets = new Dictionary<string, NumericalSet>() { };
         public static void Main()
         {
             var answer = 0;
@@ -119,10 +119,10 @@
                         Console.Write("Неверный ввод! Введите количество элементов: ");
                         isCorrect = int.TryParse(Console.ReadLine(), out answer);
                     }
-                    Sets[nameOfSet] = new MySet().CreateRandom(answer);
+                    Sets[nameOfSet] = new NumericalSet().CreateRandom(answer);
                     break;
                 case 2:
-                    Sets[nameOfSet] = new MySet();
+                    Sets[nameOfSet] = new NumericalSet();
                     Console.Write("Введите количество элементов: ");
                     isCorrect = int.TryParse(Console.ReadLine(), out answer);
                     while (!isCorrect)
@@ -143,7 +143,7 @@
                     }
                     break;
                 case 3://Do
-                    Sets[nameOfSet] = new MySet();
+                    Sets[nameOfSet] = new NumericalSet();
                     Console.Write("Новое множество будет создано на основе базового.\n" +
                         "Выберите базовое множество:\n" +
                         "1. Существующее множество\n" +
@@ -154,7 +154,7 @@
                         Console.Write("Неверный ввод! Число от 1 до 2: ");
                         isCorrect = int.TryParse(Console.ReadLine(), out answer);
                     }
-                    MySet BaseSet = new MySet();
+                    NumericalSet BaseSet = new NumericalSet();
                     if (answer == 1)
                     {
                         string nameOfBaseSet = ChooseExistingSet();
