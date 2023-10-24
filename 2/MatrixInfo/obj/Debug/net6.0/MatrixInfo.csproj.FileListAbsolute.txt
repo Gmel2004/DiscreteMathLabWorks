@@ -1,0 +1,14 @@
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\bin\Debug\net6.0\MatrixInfo.exe
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\bin\Debug\net6.0\MatrixInfo.deps.json
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\bin\Debug\net6.0\MatrixInfo.runtimeconfig.json
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\bin\Debug\net6.0\MatrixInfo.dll
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\bin\Debug\net6.0\MatrixInfo.pdb
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.AssemblyInfoInputs.cache
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.AssemblyInfo.cs
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.csproj.CoreCompileInputs.cache
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.dll
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\refint\MatrixInfo.dll
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.pdb
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\MatrixInfo.genruntimeconfig.cache
+C:\Users\Gleb\Desktop\Github\DiscreteMathLabWorks\2\MatrixInfo\obj\Debug\net6.0\ref\MatrixInfo.dll
