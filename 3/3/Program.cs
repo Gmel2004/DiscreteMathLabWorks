@@ -4,20 +4,22 @@
     {
         private static void Main(string[] args)
         {
-            string vector = Console.ReadLine()!;
+            //string functionVector = "1110000000000000"; //Console.ReadLine()!;
 
-            var columns = ParseVector(vector);
-            var rows = StartBonding(columns);
-            Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" \\/ ", columns)}");
-            Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" ", rows)}\n");
+            //var columns = ParseVector(functionVector);
+            //var rows = StartBonding(columns);
+            //Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" \\/ ", columns)}");
+            //Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" ", rows)}\n");
 
-            Console.WriteLine(
-                string
-                .Join(@"/\",
-                StartFindMinCoverage(CreateImplicantMatrix(rows, columns))));
+            //Console.WriteLine(
+            //    string
+            //    .Join(@"/\",
+            //    StartFindMinCoverage(CreateImplicantMatrix(rows, columns))));
+
+            Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" \\/ ", MinimalDisjunctiveNormalFormCreator.CreateMDNF("1000100000111111"))}");
         }
 
-        private static List<string> ParseVector(string vector)
+        private static List<string> ParseVector(string vector) // выбрать строки, в которых функция - истинна
         {
             string[] base4 = new string[16] {
                                     "0000",
@@ -39,7 +41,7 @@
 
             Console.WriteLine("abcd F");
 
-            HashSet<string> relevant = new();
+            List<string> relevant = new();
             for (var i = 0; i < vector.Length; i++)
             {
                 Console.WriteLine($"{base4[i]} {vector[i]}");
@@ -55,21 +57,21 @@
                 }
             }
 
-            return relevant.ToList();
+            return relevant;
         }
 
-        private static List<string> StartBonding(HashSet<string> relevant)
+        private static List<string> StartBonding(List<string> relevant)
         {
             var result = ExecuteBonding(relevant, 3);
 
             return result.Item1.Concat(result.Item2).ToList();
         }
 
-        private static (List<string>, List<string>) ExecuteBonding(HashSet<string> relevant, int countCommon)//Добавить разделение на группы
+        private static (List<string>, List<string>) ExecuteBonding(List<string> relevant, int countCommon)//Добавить разделение на группы
         {
             List<string> outsiders = new();
             bool[] used = new bool[relevant.Count];
-            HashSet<string> newRelevant = new();
+            List<string> newRelevant = new();
 
             for (int i = 0; i < relevant.Count - 1; i++)
             {
@@ -96,7 +98,7 @@
             if (newRelevant.Count > 0 && countCommon > 2)
             {
                 var nextBonding = ExecuteBonding(newRelevant, countCommon - 1);
-                newRelevant = nextBonding.Item1.ToHashSet();
+                newRelevant = nextBonding.Item1;
                 outsiders = outsiders.Concat(nextBonding.Item2).ToList();
             }
 
