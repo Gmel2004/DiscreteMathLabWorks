@@ -5,7 +5,8 @@
         private static void Main(string[] args)
         {
             var functionVector = Console.ReadLine()!;
-            var result = CreateMDNF(functionVector);
+
+			var result = CreateMDNF(functionVector);
             Console.WriteLine(string.Join(" ", result));
         }
 
@@ -29,11 +30,12 @@
             var rowsTable = incapableAbsorptionConjunctions.ToDictionary(t => t, t => new HashSet<Conjunction>());
             FillImplicateMatrix(columnsTable, rowsTable, initialConjunctions, incapableAbsorptionConjunctions);
 
-            Console.WriteLine($"\t\t{string.Join("\t", initialConjunctions)}");
+            Console.WriteLine($"    |{string.Join("|", initialConjunctions.Select(t => t.ToString().PadLeft(4)))}|");
+
             foreach (var i in incapableAbsorptionConjunctions)
             {
-                Console.WriteLine($"{i}\t{string.Join("\t",initialConjunctions.Select(t => columnsTable[t].Contains(i) ? '+' : '\t'))}");
-            }
+                Console.WriteLine($"{i,4}|{string.Join("|",initialConjunctions.Select(t => columnsTable[t].Contains(i) ? "  + " : "    "))}|");
+			}
 
             var core = new HashSet<Conjunction>();
             ExtractCore(core, columnsTable, rowsTable, initialConjunctions);
@@ -163,7 +165,7 @@
                     common[indexCommon++] = conjuctionA[i];
                 }
             }
-            return common;
+            return indexCommon == common.Count ? common : null;
         }
 
         private static HashSet<Conjunction> FindMinNotCoreConjunction(
