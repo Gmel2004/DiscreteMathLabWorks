@@ -14,6 +14,8 @@ namespace _3
             set { items[index] = value; }
         }
 
+        public Conjunction(int count) => items = new char[count];
+
         public Conjunction(IEnumerable<char> items)
         {
             this.items = items.ToArray();
