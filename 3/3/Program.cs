@@ -5,9 +5,7 @@
         private static void Main(string[] args)
         {
             var functionVector = Console.ReadLine()!;
-
 			var result = CreateMDNF(functionVector);
-            Console.WriteLine(string.Join(" ", result));
         }
 
         private static HashSet<Conjunction> CreateMDNF(string functionVector)
@@ -20,11 +18,11 @@
                 Console.WriteLine($"{Convert.ToString(i, 2).PadLeft(4, '0')} {functionVector[i]}");
             }
 
-            Console.WriteLine($"F = {string.Join(" \\/ ", initialConjunctions)}");
+            Console.WriteLine($"F = {string.Join(" v ", initialConjunctions)}");
 
             var incapableAbsorptionConjunctions = ExecuteBonding(initialConjunctions);
 
-            Console.WriteLine($"F = {string.Join(" \\/ ", incapableAbsorptionConjunctions)}");
+            Console.WriteLine($"F = {string.Join(" v ", incapableAbsorptionConjunctions)}");
 
             var columnsTable = initialConjunctions.ToDictionary(t => t, t => new HashSet<Conjunction>());
             var rowsTable = incapableAbsorptionConjunctions.ToDictionary(t => t, t => new HashSet<Conjunction>());
@@ -44,7 +42,7 @@
 
             result.UnionWith(core);
 
-            Console.WriteLine($"F = {string.Join(" \\/ ", result)}");
+            Console.WriteLine($"F = {string.Join(" v ", result)}");
 
             return result;
         }
@@ -115,7 +113,7 @@
             bool[] used = new bool[relevant.Count];
             HashSet<Conjunction> newRelevant = new();
 
-            while (relevant.Count > 0 && relevant[0].Count > 2)
+            while (relevant.Count > 0 && relevant[0].Count > 0)
             {
                 for (var i = 0; i < relevant.Count - 1; i++)
                 {
