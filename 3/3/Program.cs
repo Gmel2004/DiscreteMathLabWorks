@@ -84,7 +84,7 @@
             {
                 foreach (var conjunctionB in incapableAbsorptionConjunctions)
                 {
-                    if (conjunctionB.All(t => conjunctionA.Contains(t)))//мб легче рассматривать подстроки и не надо особый тип Conjuction?
+                    if (conjunctionB.All(t => conjunctionA.Contains(t)))
                     {
                         columnsTable[conjunctionA].Add(conjunctionB);
                         rowsTable[conjunctionB].Add(conjunctionA);
