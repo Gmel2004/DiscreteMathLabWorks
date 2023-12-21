@@ -4,189 +4,204 @@
     {
         private static void Main(string[] args)
         {
-            string vector = Console.ReadLine()!;
-
-            var columns = ParseVector(vector);
-            var rows = StartBonding(columns);
-            Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" \\/ ", columns)}");
-            Console.WriteLine($"\nF(a, b, c, d) = {string.Join(" ", rows)}\n");
-
-            Console.WriteLine(
-                string
-                .Join(@"/\",
-                StartFindMinCoverage(CreateImplicantMatrix(rows, columns))));
+            var functionVector = Console.ReadLine()!;
+			var result = CreateMDNF(functionVector);
         }
 
-        private static List<string> ParseVector(string vector)
+        private static HashSet<Conjunction> CreateMDNF(string functionVector)
         {
-            string[] base4 = new string[16] {
-                                    "0000",
-                                    "0001",
-                                    "0010",
-                                    "0011",
-                                    "0100",
-                                    "0101",
-                                    "0110",
-                                    "0111",
-                                    "1000",
-                                    "1001",
-                                    "1010",
-                                    "1011",
-                                    "1100",
-                                    "1101",
-                                    "1110",
-                                    "1111"};
+            var initialConjunctions = GetTrueString(functionVector);
 
-            Console.WriteLine("abcd F");
-
-            HashSet<string> relevant = new();
-            for (var i = 0; i < vector.Length; i++)
+            Console.WriteLine("xyzw F");
+            for (int i = 0; i < 16; i++)
             {
-                Console.WriteLine($"{base4[i]} {vector[i]}");
-
-                if (vector[i] == '1')
-                {
-                    var values = "";
-                    for (var j = 0; j < base4[i].Length; j++)
-                    {
-                        values += base4[i][j] == '1' ? (char)('A' + j) : (char)('a' + j);
-                    }
-                    relevant.Add(values);
-                }
+                Console.WriteLine($"{Convert.ToString(i, 2).PadLeft(4, '0')} {functionVector[i]}");
             }
 
-            return relevant.ToList();
+            Console.WriteLine($"F = {string.Join(" v ", initialConjunctions)}");
+
+            var incapableAbsorptionConjunctions = ExecuteBonding(initialConjunctions);
+
+            Console.WriteLine($"F = {string.Join(" v ", incapableAbsorptionConjunctions)}");
+
+            var columnsTable = initialConjunctions.ToDictionary(t => t, t => new HashSet<Conjunction>());
+            var rowsTable = incapableAbsorptionConjunctions.ToDictionary(t => t, t => new HashSet<Conjunction>());
+            FillImplicateMatrix(columnsTable, rowsTable, initialConjunctions, incapableAbsorptionConjunctions);
+
+            Console.WriteLine($"    |{string.Join("|", initialConjunctions.Select(t => t.ToString().PadLeft(4)))}|");
+
+            foreach (var i in incapableAbsorptionConjunctions)
+            {
+                Console.WriteLine($"{i,4}|{string.Join("|",initialConjunctions.Select(t => columnsTable[t].Contains(i) ? "  + " : "    "))}|");
+			}
+
+            var core = new HashSet<Conjunction>();
+            ExtractCore(core, columnsTable, rowsTable, initialConjunctions);
+
+            var result = FindMinNotCoreConjunction(rowsTable, columnsTable.Keys.ToHashSet());
+
+            result.UnionWith(core);
+
+            Console.WriteLine($"F = {string.Join(" v ", result)}");
+
+            return result;
         }
 
-        private static List<string> StartBonding(HashSet<string> relevant)
+        private static void ExtractCore(
+            HashSet<Conjunction> core,
+            Dictionary<Conjunction, HashSet<Conjunction>> columnsTable,
+            Dictionary<Conjunction, HashSet<Conjunction>> rowsTable,
+            List<Conjunction> initialConjunctions)
         {
-            var result = ExecuteBonding(relevant, 3);
+            foreach (var conjunction in initialConjunctions)
+            {
+                if (columnsTable.ContainsKey(conjunction) && columnsTable[conjunction].Count == 1)
+                {
+                    var coreConjunction = columnsTable[conjunction].First();
+                    core.Add(coreConjunction);
+                    var coreRow = rowsTable[coreConjunction];
+                    rowsTable.Remove(coreConjunction);
+                    foreach (var row in rowsTable)
+                    {
+                        row.Value.ExceptWith(coreRow);
+                    }
 
-            return result.Item1.Concat(result.Item2).ToList();
+                    foreach (var column in coreRow)
+                    {
+                        columnsTable.Remove(column);
+                    }
+                }
+            }
         }
 
-        private static (List<string>, List<string>) ExecuteBonding(HashSet<string> relevant, int countCommon)//Добавить разделение на группы
+        private static void FillImplicateMatrix(
+            Dictionary<Conjunction, HashSet<Conjunction>> columnsTable,
+            Dictionary<Conjunction, HashSet<Conjunction>> rowsTable,
+            List<Conjunction> initialConjunctions,
+            HashSet<Conjunction> incapableAbsorptionConjunctions)
         {
-            List<string> outsiders = new();
+            foreach (var conjunctionA in initialConjunctions)
+            {
+                foreach (var conjunctionB in incapableAbsorptionConjunctions)
+                {
+                    if (conjunctionB.All(t => conjunctionA.Contains(t)))//мб легче рассматривать подстроки и не надо особый тип Conjuction?
+                    {
+                        columnsTable[conjunctionA].Add(conjunctionB);
+                        rowsTable[conjunctionB].Add(conjunctionA);
+                    }
+                }
+            }
+        }
+
+        private static List<Conjunction> GetTrueString(string functionVector)
+        {
+            var result = new List<Conjunction>();
+            for (var i = 0; i < functionVector.Length; i++)
+            {
+                if (functionVector[i] == '1')
+                {
+                    result.Add(new(Convert.ToString(i, 2).PadLeft(4, '0')));
+                }
+            }
+            
+            return result;
+        }
+
+        private static HashSet<Conjunction> ExecuteBonding(List<Conjunction> relevant)
+        {
+            HashSet<Conjunction> outsiders = new();
             bool[] used = new bool[relevant.Count];
-            HashSet<string> newRelevant = new();
+            HashSet<Conjunction> newRelevant = new();
 
-            for (int i = 0; i < relevant.Count - 1; i++)
+            while (relevant.Count > 0 && relevant[0].Count > 0)
             {
-                for (int j = i + 1; j < relevant.Count; j++)
+                for (var i = 0; i < relevant.Count - 1; i++)
                 {
-                    var common = FindCommon(relevant[i], relevant[j]);
-
-                    if (common.Length == countCommon)
+                    for (int j = i + 1; j < relevant.Count; j++)
                     {
-                        used[i] = used[j] = true;
-                        newRelevant.Add(common);
-                    }
-                }
-            }
-
-            for (int i = 0; i < used.Length; i++)
-            {
-                if (used[i] == false)
-                {
-                    outsiders.Add(relevant[i]);
-                }
-            }
-
-            if (newRelevant.Count > 0 && countCommon > 2)
-            {
-                var nextBonding = ExecuteBonding(newRelevant, countCommon - 1);
-                newRelevant = nextBonding.Item1.ToHashSet();
-                outsiders = outsiders.Concat(nextBonding.Item2).ToList();
-            }
-
-            return (newRelevant.ToList(), outsiders);
-        }
-
-        private static string FindCommon(string str1, string str2)
-        {
-            string common = "";
-
-            for (int i = 0; i < str1.Length; i++)
-            {
-                for (int j = 0; j < str2.Length; j++)
-                {
-                    if (str1[i] == str2[j])
-                    {
-                        common += str1[i];
-                    }
-                }
-            }
-
-            return common;
-        }
-
-        private static Dictionary<string, List<string>> CreateImplicantMatrix(List<string> rows, List<string> columns)
-        {
-            Dictionary<string, List<string>> matrix = new();
-            for (int i = 0; i < columns.Count; i++)
-            {
-                for (int j = 0; j < rows.Count; j++)
-                {
-                    var isContains = true;
-
-                    for (int k = 0; k < rows[j].Length && isContains; k++)
-                    {
-                        isContains = columns[i].Contains(rows[j][k]);
-                    }
-
-                    if (isContains)
-                    {
-                        if (matrix.ContainsKey(columns[i]))
+                        var common = FindCommon(relevant[i], relevant[j]);
+                        
+                        if (common != null)
                         {
-                            matrix[columns[i]].Add(rows[j]);
-                        }
-                        else
-                        {
-                            matrix[columns[i]] = new() { rows[j] };
+                            used[i] = used[j] = true;
+                            newRelevant.Add(common);
                         }
                     }
                 }
-                Console.WriteLine($"{columns[i]}: {string.Join(" ", matrix[columns[i]])}");
+
+                for (int i = 0; i < used.Length; i++)
+                {
+                    if (used[i] == false)
+                    {
+                        outsiders.Add(relevant[i]);
+                    }
+                }
+
+                relevant = newRelevant.ToList();
+                newRelevant.Clear();
+                used = new bool[relevant.Count];
             }
+            outsiders.UnionWith(relevant);
 
-            return matrix;
+            return outsiders;
         }
 
-        private static HashSet<string> StartFindMinCoverage(Dictionary<string, List<string>> matrix)
+        private static Conjunction? FindCommon(Conjunction conjuctionA, Conjunction conjuctionB)
         {
-            var keys = matrix.Keys.ToArray();
+            Conjunction common = new(conjuctionA.Count - 1);
+            int indexCommon = 0;
 
-            return FindMinCoverage(matrix, keys, 0, new List<string>());
-        }
-
-        private static HashSet<string> FindMinCoverage(Dictionary<string, List<string>> matrix, string[] keys, int index, List<string> coverage)
-        {
-            HashSet<string> Min = new();
-            for (int i = 0; i < matrix[keys[index]].Count; i++)
+            for (int i = 0; i < conjuctionA.Count; i++)
             {
-                coverage.Add(matrix[keys[index]][i]);
-
-                if (index < keys.Length - 1)
+                if (char.ToLower(conjuctionA[i]) != char.ToLower(conjuctionB[i]))
                 {
-                    var posibleMin = FindMinCoverage(matrix, keys, index + 1, coverage);
+                    return null;
+                }
 
-                    if (Min.Count == 0 || posibleMin.Distinct().Count() < Min.Count)
+                if (conjuctionA[i] == conjuctionB[i])
+                {
+                    common[indexCommon++] = conjuctionA[i];
+                }
+            }
+            return indexCommon == common.Count ? common : null;
+        }
+
+        private static HashSet<Conjunction> FindMinNotCoreConjunction(
+                    Dictionary<Conjunction, HashSet<Conjunction>> rowsTable,
+                    HashSet<Conjunction> columns)
+        {
+            var result = new HashSet<Conjunction>(columns);
+            FindMinNotCoreConjunction(result, new(), rowsTable, rowsTable.Keys.ToList(), columns.Count, 0);
+            return result;
+        }
+
+        private static void FindMinNotCoreConjunction(
+            HashSet<Conjunction> best,
+            HashSet<Conjunction> common,
+            Dictionary<Conjunction, HashSet<Conjunction>> rowsTable,
+            List<Conjunction> rows,
+            int columnsCount,
+            int rowIndex)
+        {
+            if (rowIndex == rowsTable.Count)
+            {
+                var isCovering = common.Select(t => rowsTable[t]).Distinct().Count() == columnsCount;
+                if (isCovering && (common.Count == best.Count && common.Sum(t => t.Count) < best.Sum(t => t.Count)
+                    || common.Count < best.Count))
+                {
+                    best.Clear();
+                    foreach (var conjunction in common)
                     {
-                        Min = posibleMin.ToHashSet();
+                        best.Add(conjunction);
                     }
                 }
-                else
-                {
-                    if (Min.Count == 0 || coverage.Distinct().Count() < Min.Count)
-                    {
-                        Min = coverage.ToHashSet();
-                    }
-                }
-                coverage.RemoveAt(coverage.Count - 1);
+                return;
             }
 
-            return Min;
+            FindMinNotCoreConjunction(best, common, rowsTable, rows, columnsCount, rowIndex + 1);
+            common.Add(rows[rowIndex]);
+            FindMinNotCoreConjunction(best, common, rowsTable, rows, columnsCount, rowIndex + 1);
+            common.Remove(rows[rowIndex]);
         }
     }
-}
+} 
