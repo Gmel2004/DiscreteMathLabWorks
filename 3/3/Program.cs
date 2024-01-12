@@ -5,7 +5,7 @@
         private static void Main(string[] args)
         {
             var functionVector = Console.ReadLine()!;
-			var result = CreateMDNF(functionVector);
+            CreateMDNF(functionVector);
         }
 
         private static HashSet<Conjunction> CreateMDNF(string functionVector)
@@ -32,8 +32,8 @@
 
             foreach (var i in incapableAbsorptionConjunctions)
             {
-                Console.WriteLine($"{i,4}|{string.Join("|",initialConjunctions.Select(t => columnsTable[t].Contains(i) ? "  + " : "    "))}|");
-			}
+                Console.WriteLine($"{i,4}|{string.Join("|", initialConjunctions.Select(t => columnsTable[t].Contains(i) ? "  + " : "    "))}|");
+            }
 
             var core = new HashSet<Conjunction>();
             ExtractCore(core, columnsTable, rowsTable, initialConjunctions);
@@ -103,7 +103,7 @@
                     result.Add(new(Convert.ToString(i, 2).PadLeft(4, '0')));
                 }
             }
-            
+
             return result;
         }
 
@@ -120,7 +120,7 @@
                     for (int j = i + 1; j < relevant.Count; j++)
                     {
                         var common = FindCommon(relevant[i], relevant[j]);
-                        
+
                         if (common != null)
                         {
                             used[i] = used[j] = true;
@@ -204,4 +204,4 @@
             common.Remove(rows[rowIndex]);
         }
     }
-} 
+}
